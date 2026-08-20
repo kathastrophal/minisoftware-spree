@@ -174,6 +174,9 @@
       background:linear-gradient(90deg,rgba(244,63,141,.12),rgba(139,92,246,.12));
       border:1px solid rgba(244,63,141,.32);color:#ffdbea;font-size:13px
     }
+    .shortcut-note{
+      margin-top:10px;color:var(--muted);font-size:12px;line-height:1.5
+    }
     .toolbar{display:flex;gap:10px;flex-wrap:wrap}
     .status{font-size:12px;color:#91a9ca;margin-left:auto;align-self:center}
     .divider{height:1px;background:#203457;margin:16px 0}
@@ -639,6 +642,9 @@
           <div class="quality-note">
             <b>Qualitätssicherung:</b><br>
             WORK//AI ergänzt automatisch Regeln zu Faktenprüfung, Unsicherheiten und – wenn aktiviert – Sprachkorrektur sowie direkter Umsetzung.
+          </div>
+          <div class="shortcut-note">
+            Tastaturkuerzel: <b>Strg + Enter</b> erzeugt den Prompt, <b>Strg + Shift + C</b> kopiert ihn direkt fuer ChatGPT.
           </div>
         </div>
 
@@ -1419,6 +1425,16 @@ ${executionInstruction(activeId)}`
     el("createPromptBtn").onclick=createPrompt;
     el("promptModal").addEventListener("click",e=>{if(e.target===el("promptModal")) closeModal();});
     document.addEventListener("keydown",e=>{if(e.key==="Escape") closeModal();});
+    document.addEventListener("keydown",e=>{
+      if(e.ctrlKey && e.key==="Enter"){
+        e.preventDefault();
+        generatePrompt();
+      }
+      if(e.ctrlKey && e.shiftKey && e.key.toLowerCase()==="c"){
+        e.preventDefault();
+        el("copyBtn").click();
+      }
+    });
 
     el("saveGeneratedBtn").onclick=()=>{
       let txt=el("output").textContent;
