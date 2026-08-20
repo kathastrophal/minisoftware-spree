@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">WORK AI App Icon</title>
+  <desc id="desc">Quadratisches App-Icon mit Farbverlauf und Sternsymbol fuer den WORK AI Prompt Hub.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#315df5" />
+      <stop offset="55%" stop-color="#7b48ef" />
+      <stop offset="100%" stop-color="#f43f8d" />
+    </linearGradient>
+    <radialGradient id="glow" cx="30%" cy="25%" r="75%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.34" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="120" fill="#07101f" />
+  <rect x="36" y="36" width="440" height="440" rx="104" fill="url(#bg)" />
+  <rect x="36" y="36" width="440" height="440" rx="104" fill="url(#glow)" />
+  <path d="M255 104 289 206 396 206 309 268 342 372 255 310 170 372 202 268 116 206 223 206Z" fill="#f8fbff" />
+  <path d="M181 388h151" stroke="#f8fbff" stroke-width="26" stroke-linecap="round" opacity="0.88" />
+</svg>

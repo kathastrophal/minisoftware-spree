@@ -3,7 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="WORK//AI ist ein lokaler Prompt Hub fuer den Arbeitsalltag mit wiederverwendbaren Vorlagen, Platzhaltern sowie Export- und Importfunktion." />
+  <meta name="theme-color" content="#07101f" />
   <title>WORK//AI – Prompt Hub für den Arbeitsalltag</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="assets/icon.svg" />
   <style>
     :root{
       --bg:#07101f;
@@ -514,6 +519,7 @@
         <button class="btn ghost" id="exportBtn">↓ Sammlung exportieren</button>
         <label class="btn ghost" for="importFile">↑ Sammlung importieren</label>
         <input id="importFile" type="file" accept=".json,application/json" hidden />
+        <button class="btn ghost" id="installAppBtn" type="button" hidden>App installieren</button>
         <button class="btn ghost" id="historyBtn">🕘 Gespeicherte Prompts <span id="historyCount"></span></button>
         <button class="btn primary" id="newPromptBtn">+ Neuer Prompt</button>
       </div>
@@ -1328,6 +1334,48 @@ ${executionInstruction(activeId)}`
       return String(str).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
     }
 
+    let installPromptEvent = null;
+
+    function setupInstallPrompt(){
+      const installBtn = el("installAppBtn");
+      if(!installBtn) return;
+
+      window.addEventListener("beforeinstallprompt", event=>{
+        event.preventDefault();
+        installPromptEvent = event;
+        installBtn.hidden = false;
+      });
+
+      window.addEventListener("appinstalled", ()=>{
+        installPromptEvent = null;
+        installBtn.hidden = true;
+        toast("Die App wurde auf diesem Geraet installiert.");
+      });
+
+      installBtn.addEventListener("click", async ()=>{
+        if(!installPromptEvent){
+          toast("Installation ist auf diesem Geraet ueber das Browser-Menue verfuegbar.");
+          return;
+        }
+        installPromptEvent.prompt();
+        const choice = await installPromptEvent.userChoice;
+        if(choice?.outcome !== "accepted"){
+          toast("Installation wurde nicht bestaetigt.");
+        }
+        installPromptEvent = null;
+        installBtn.hidden = true;
+      });
+    }
+
+    async function registerServiceWorker(){
+      if(!("serviceWorker" in navigator)) return;
+      try{
+        await navigator.serviceWorker.register("./service-worker.js");
+      }catch(err){
+        console.error("Service Worker konnte nicht registriert werden:", err);
+      }
+    }
+
     function openModal(){
       el("promptModal").classList.add("open");
       el("newName").focus();
@@ -1410,6 +1458,9 @@ ${executionInstruction(activeId)}`
 
     el("darkModeBtn").onclick=()=>applyTheme("dark");
     el("lightModeBtn").onclick=()=>applyTheme("light");
+
+    setupInstallPrompt();
+    registerServiceWorker();
 
     // Darstellung und gespeicherten Browser-Stand laden.
     loadTheme();
