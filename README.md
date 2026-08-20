@@ -16,6 +16,11 @@ WORK//AI ist eine kleine browserbasierte Mini-Software als einzelne HTML-Anwendu
 - `service-worker.js`: Offline-Cache fuer den App-Start
 - `assets/icon.svg`: App-Icon
 - `.github/workflows/pages.yml`: Automatisches Deployment auf GitHub Pages
+- `.github/workflows/release-apps.yml`: Automatischer Build fuer Android-APK und Windows-EXE
+- `package.json`: Node- und Packaging-Konfiguration
+- `capacitor.config.json`: Android-App-Konfiguration
+- `electron/main.js`: Startdatei fuer die Windows-App
+- `scripts/prepare-web.mjs`: Baut aus den Quelldateien den Web-Ordner fuer App-Pakete
 
 ## Lokal starten
 
@@ -41,9 +46,23 @@ Nach dem Push kann das Repository so veroeffentlicht werden:
 
 Danach uebernimmt der Workflow in `.github/workflows/pages.yml` die Veroeffentlichung.
 
-## Naechste Ausbaustufen
+## APK und EXE automatisch bauen
 
-- App-Icons in mehreren PNG-Groessen erzeugen
-- Android-Paket mit Capacitor bauen
-- Windows-App mit Tauri bauen
-- Releases automatisch ueber GitHub Actions veroeffentlichen
+Die Release-Automation ist vorbereitet:
+
+- Android wird als installierbare `APK` ueber Capacitor gebaut.
+- Windows wird als `EXE` ueber Electron Builder gebaut.
+- Wenn ein Git-Tag wie `v0.1.0` nach GitHub gepusht wird, legt GitHub Actions ein Release an und haengt die gebauten Dateien an.
+
+Beispiel:
+
+```powershell
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+## Wichtiger Hinweis zu Android
+
+Aktuell erzeugt der Workflow bewusst eine `debug`-APK, damit der Build sofort ohne zusaetzliche Geheimnisse funktioniert. Diese APK kann auf Android-Geraeten installiert werden, ist aber noch nicht fuer den Play Store gedacht.
+
+Spaeter koennen wir den Workflow auf eine signierte `release`-APK umstellen. Dafuer braucht ihr dann einen Android-Keystore und die passenden GitHub-Secrets.

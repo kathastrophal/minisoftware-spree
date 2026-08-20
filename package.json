@@ -1,0 +1,51 @@
+{
+  "name": "minisoftware-spree",
+  "version": "0.1.0",
+  "private": true,
+  "description": "WORK//AI Prompt Hub als Web-App, Android-APK und Windows-EXE aus einem Repository.",
+  "main": "electron/main.js",
+  "author": "Team KI Use Cases",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kathastrophal/minisoftware-spree.git"
+  },
+  "scripts": {
+    "build:web": "node scripts/prepare-web.mjs",
+    "electron:dist": "npm run build:web && electron-builder --win nsis portable --publish never",
+    "android:sync": "npm run build:web && npx cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.0.0",
+    "electron": "^37.0.0",
+    "electron-builder": "^27.0.0"
+  },
+  "build": {
+    "appId": "io.github.kathastrophal.minisoftware.spree",
+    "productName": "WORK AI Prompt Hub",
+    "directories": {
+      "output": "release/windows"
+    },
+    "files": [
+      "web/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "artifactName": "WORK-AI-Prompt-Hub-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false
+    }
+  }
+}

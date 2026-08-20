@@ -11,3 +11,7 @@ dist/
 build/
 tmp/
 temp/
+node_modules/
+web/
+release/
+android/

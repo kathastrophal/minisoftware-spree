@@ -1,0 +1,7 @@
+{
+  "appId": "io.github.kathastrophal.minisoftware.spree",
+  "appName": "WORK AI Prompt Hub",
+  "webDir": "web",
+  "bundledWebRuntime": false,
+  "backgroundColor": "#07101f"
+}
