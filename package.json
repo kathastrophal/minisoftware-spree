@@ -22,7 +22,7 @@
   "devDependencies": {
     "@capacitor/cli": "^8.0.0",
     "electron": "^37.0.0",
-    "electron-builder": "^27.0.0"
+    "electron-builder": "^26.15.3"
   },
   "build": {
     "appId": "io.github.kathastrophal.minisoftware.spree",
