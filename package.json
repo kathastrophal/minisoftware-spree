@@ -1,6 +1,6 @@
 {
   "name": "minisoftware-spree",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "WORK//AI Prompt Hub als Web-App, Android-APK und Windows-EXE aus einem Repository.",
   "main": "electron/main.js",
