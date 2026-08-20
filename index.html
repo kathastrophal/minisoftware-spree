@@ -1,0 +1,1425 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WORK//AI – Prompt Hub für den Arbeitsalltag</title>
+  <style>
+    :root{
+      --bg:#07101f;
+      --bg2:#0b1730;
+      --panel:#0f1d37cc;
+      --panel-solid:#101d33;
+      --line:#203457;
+      --text:#f7f9ff;
+      --muted:#a7b6d1;
+      --blue:#4f7cff;
+      --cyan:#22d3ee;
+      --violet:#8b5cf6;
+      --pink:#f43f8d;
+      --orange:#fb923c;
+      --green:#34d399;
+      --danger:#fb7185;
+      --shadow:0 22px 60px rgba(0,0,0,.28);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 85% 10%, rgba(99,102,241,.22), transparent 28%),
+        radial-gradient(circle at 15% 95%, rgba(34,211,238,.12), transparent 32%),
+        linear-gradient(145deg,var(--bg),#09162b 45%,#07101f);
+      min-height:100vh;
+    }
+    body::before{
+      content:"";
+      position:fixed; inset:0; pointer-events:none; opacity:.22;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+      background-size:38px 38px;
+      mask-image:linear-gradient(to bottom,black,transparent 90%);
+    }
+    button,input,textarea,select{font:inherit;color:inherit}
+    button{cursor:pointer}
+    .app{max-width:1500px;margin:auto;padding:24px}
+    .topbar{
+      position:sticky; top:0; z-index:20;
+      display:flex; gap:18px; align-items:center; justify-content:space-between;
+      padding:14px 18px; margin:-4px 0 24px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(7,16,31,.84);
+      backdrop-filter:blur(18px);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+    }
+    .brand{display:flex;align-items:center;gap:12px;font-weight:900;letter-spacing:-.03em;font-size:22px}
+    .brandmark{
+      width:38px;height:38px;border-radius:12px;
+      display:grid;place-items:center;font-size:20px;
+      background:linear-gradient(135deg,var(--blue),var(--violet),var(--pink));
+      box-shadow:0 0 24px rgba(139,92,246,.35);
+    }
+    .brand span{
+      background:linear-gradient(90deg,#fff 0 55%,#78a3ff 55% 70%,#b67cff 70% 82%,#ff679f 82%);
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+    .topactions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{
+      border:1px solid rgba(255,255,255,.1); color:#fff;
+      background:#142543; padding:10px 14px; border-radius:12px;
+      transition:.2s ease; font-weight:700;
+    }
+    .btn:hover{transform:translateY(-1px);border-color:#4f7cff;background:#18305a}
+    .btn.primary{background:linear-gradient(135deg,#315df5,#7b48ef);border:none}
+    .btn.pink{background:linear-gradient(135deg,#be3dff,#f43f8d);border:none}
+    .btn.ghost{background:transparent}
+    .btn.danger{background:#3a1724;border-color:#713044;color:#ffd8e3}
+    .hero{
+      display:grid;grid-template-columns:1.12fr .88fr;gap:24px;
+      margin-bottom:24px;
+    }
+    .hero-card,.mini-card,.panel{
+      border:1px solid rgba(255,255,255,.09);
+      background:linear-gradient(180deg,rgba(17,33,61,.92),rgba(9,22,42,.9));
+      box-shadow:var(--shadow);border-radius:var(--radius);
+    }
+    .hero-card{padding:30px;position:relative;overflow:hidden}
+    .hero-card::after{
+      content:"";position:absolute;width:280px;height:280px;border-radius:50%;
+      background:radial-gradient(circle,rgba(244,63,141,.18),transparent 65%);
+      right:-50px;top:-80px;
+    }
+    .eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.18em;color:#62e7f2;font-weight:900}
+    h1{font-size:clamp(38px,5vw,72px);line-height:.98;margin:12px 0 16px;letter-spacing:-.055em}
+    .gradient{
+      background:linear-gradient(90deg,#79a2ff,#9a68ff,#ff5790);
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+    .lead{font-size:18px;line-height:1.6;color:#c1cde0;max-width:820px;margin:0 0 22px}
+    .pillrow{display:flex;gap:10px;flex-wrap:wrap}
+    .pill{
+      padding:8px 11px;border-radius:999px;background:#102849;
+      border:1px solid #224d7f;color:#d9ecff;font-size:13px;font-weight:800;
+    }
+    .hero-side{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .mini-card{padding:20px;min-height:150px}
+    .mini-card strong{display:block;font-size:28px;margin-top:10px}
+    .mini-card p{color:var(--muted);margin:8px 0 0;line-height:1.45}
+    .workspace{display:grid;grid-template-columns:330px minmax(0,1fr);gap:22px;align-items:start}
+    .sidebar{position:sticky;top:92px}
+    .panel{padding:18px}
+    .section-title{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      margin-bottom:14px
+    }
+    .section-title h2,.section-title h3{margin:0;font-size:20px}
+    .searchbox{position:relative}
+    .searchbox input{
+      width:100%;border:1px solid var(--line);border-radius:12px;
+      background:#0a162b;color:#fff;padding:12px 14px 12px 40px;outline:none;
+    }
+    .searchbox::before{content:"⌕";position:absolute;left:14px;top:8px;font-size:22px;color:#7aa5d8}
+    .cats{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0}
+    .cat{
+      padding:7px 10px;border-radius:999px;border:1px solid #233c64;
+      background:#0b1a31;color:#aac0dd;font-size:12px;font-weight:800
+    }
+    .cat.active{color:white;background:linear-gradient(135deg,#315df5,#7b48ef);border-color:transparent}
+    .prompt-list{display:flex;flex-direction:column;gap:9px;max-height:64vh;overflow:auto;padding-right:4px}
+    .prompt-item{
+      border:1px solid #1f3558;background:#0a172c;border-radius:14px;
+      padding:12px;display:flex;gap:11px;align-items:flex-start;transition:.2s ease
+    }
+    .prompt-item:hover{border-color:#4b70bb;transform:translateX(2px)}
+    .prompt-item.active{border-color:#7a62ff;box-shadow:inset 0 0 0 1px rgba(122,98,255,.35)}
+    .prompt-icon{
+      width:40px;height:40px;min-width:40px;border-radius:12px;display:grid;place-items:center;
+      background:linear-gradient(135deg,#2d60ff,#6d52e8);font-size:20px
+    }
+    .prompt-meta{min-width:0;flex:1}
+    .prompt-name{font-weight:850}
+    .prompt-desc{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.35}
+    .tag{display:inline-block;font-size:10px;padding:3px 6px;margin-top:6px;border-radius:999px;background:#162947;color:#86b1e8}
+    .content{display:flex;flex-direction:column;gap:20px}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .field label{display:block;font-size:12px;font-weight:850;color:#b8c8df;margin:0 0 7px;text-transform:uppercase;letter-spacing:.07em}
+    input[type="text"],textarea,select{
+      width:100%;border:1px solid #263b5f;border-radius:13px;
+      background:#09162a;color:#fff;padding:12px 13px;outline:none;
+    }
+    textarea{min-height:145px;resize:vertical;line-height:1.5}
+    input:focus,textarea:focus,select:focus{border-color:#6b75ff;box-shadow:0 0 0 3px rgba(107,117,255,.12)}
+    .template-box textarea{min-height:210px}
+    .subtle{color:var(--muted);font-size:13px;line-height:1.5}
+    .placeholder-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .empty{
+      padding:22px;border:1px dashed #30466b;border-radius:14px;color:#90a5c3;text-align:center;background:#0a1529
+    }
+    .output{
+      min-height:220px;white-space:pre-wrap;border:1px solid #30466b;border-radius:16px;
+      background:#071324;padding:18px;color:#f4f7ff;line-height:1.65;
+    }
+    .quality-note{
+      margin-top:12px;padding:12px 14px;border-radius:13px;
+      background:linear-gradient(90deg,rgba(244,63,141,.12),rgba(139,92,246,.12));
+      border:1px solid rgba(244,63,141,.32);color:#ffdbea;font-size:13px
+    }
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap}
+    .status{font-size:12px;color:#91a9ca;margin-left:auto;align-self:center}
+    .divider{height:1px;background:#203457;margin:16px 0}
+    .info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .info{
+      border:1px solid #203457;background:#0a162a;border-radius:16px;padding:16px
+    }
+    .info b{display:block;margin:8px 0 6px}
+    .info p{margin:0;color:var(--muted);font-size:13px;line-height:1.45}
+    .limits{margin-top:22px}
+    .limits ul{margin:10px 0 0;padding-left:20px;color:#c5d2e7;line-height:1.6}
+    .footer{color:#7890b1;text-align:center;font-size:12px;padding:28px 0 10px}
+    .modal{
+      position:fixed;inset:0;background:rgba(2,8,18,.74);display:none;place-items:center;z-index:100;padding:20px
+    }
+    .modal.open{display:grid}
+    .modal-card{
+      width:min(760px,100%);max-height:90vh;overflow:auto;
+      border:1px solid #31466d;background:#0b172a;border-radius:20px;padding:22px;box-shadow:var(--shadow)
+    }
+    .modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+    .modal-head h3{margin:0}
+    .close{background:transparent;border:none;color:#9bb0cc;font-size:24px}
+    .toast{
+      position:fixed;right:24px;bottom:24px;z-index:150;
+      padding:12px 15px;border-radius:13px;background:#102642;border:1px solid #31577e;
+      color:#fff;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);pointer-events:none;transition:.22s ease
+    }
+    .toast.show{opacity:1;transform:none}
+
+
+    .option-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .option-card{
+      display:flex;gap:12px;align-items:flex-start;padding:16px;
+      background:#0a162a;border:1px solid #20385d;border-radius:16px;cursor:pointer
+    }
+    .option-card:hover{border-color:#526fff}
+    .option-card input{margin-top:3px;accent-color:#6d5cff;transform:scale(1.15)}
+    .option-card b{display:block;color:var(--text);margin-bottom:5px}
+    .option-card small{display:block;color:#9fb2ce;line-height:1.45}
+    .history-list{display:flex;flex-direction:column;gap:10px}
+    .history-item{
+      border:1px solid #223a60;background:#09162a;border-radius:14px;padding:14px
+    }
+    .history-head{display:flex;gap:12px;justify-content:space-between;align-items:flex-start}
+    .history-title{font-weight:850;color:var(--text)}
+    .history-date{font-size:11px;color:#8fa7c8;white-space:nowrap}
+    .history-preview{color:#aabbd3;font-size:12px;line-height:1.45;margin:8px 0 10px;white-space:pre-wrap;max-height:82px;overflow:hidden}
+    .history-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .saved-badge{
+      display:inline-block;padding:4px 8px;border-radius:999px;background:#133958;
+      color:#aee8ff;font-size:11px;font-weight:800
+    }
+    @media (max-width:900px){.option-grid{grid-template-columns:1fr}}
+
+
+    .theme-switch{
+      display:flex;
+      gap:4px;
+      padding:4px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:#0b172b;
+      align-items:center;
+    }
+    .theme-btn{
+      border:0;
+      background:transparent;
+      color:#9fb2ce;
+      padding:7px 10px;
+      border-radius:9px;
+      font-size:12px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+    .theme-btn:hover{color:#fff;background:#152744}
+    .theme-btn.active{
+      color:#fff;
+      background:linear-gradient(135deg,#315df5,#7b48ef);
+      box-shadow:0 4px 14px rgba(49,93,245,.22);
+    }
+
+    /* ---------- Heller Modus ---------- */
+    body.light-theme{
+      --bg:#f4f7fb;
+      --bg2:#eef3f9;
+      --panel:#ffffffee;
+      --panel-solid:#ffffff;
+      --line:#d6dfec;
+      --text:#152238;
+      --muted:#60708a;
+      --shadow:0 18px 48px rgba(39,59,91,.12);
+      color:var(--text);
+      background:
+        radial-gradient(circle at 85% 10%, rgba(99,102,241,.10), transparent 30%),
+        radial-gradient(circle at 15% 95%, rgba(34,211,238,.08), transparent 32%),
+        linear-gradient(145deg,#f8fbff,#eef3f9 55%,#f6f9fc);
+    }
+    body.light-theme::before{
+      opacity:.5;
+      background-image:
+        linear-gradient(rgba(24,45,78,.035) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(24,45,78,.035) 1px,transparent 1px);
+    }
+    body.light-theme .topbar{
+      border-color:#dbe3ef;
+      background:rgba(248,251,255,.90);
+      box-shadow:var(--shadow);
+    }
+    body.light-theme .theme-switch{
+      background:#edf2f8;
+      border-color:#d6dfec;
+    }
+    body.light-theme .theme-btn{
+      color:#61728d;
+    }
+    body.light-theme .theme-btn:hover{
+      color:#152238;
+      background:#dde7f4;
+    }
+    body.light-theme .theme-btn.active{
+      color:#fff;
+    }
+
+    body.light-theme .hero-card,
+    body.light-theme .mini-card,
+    body.light-theme .panel{
+      border-color:#dbe3ef;
+      background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(248,251,255,.96));
+      color:var(--text);
+    }
+    body.light-theme .hero-card::after{
+      background:radial-gradient(circle,rgba(244,63,141,.10),transparent 65%);
+    }
+    body.light-theme .lead,
+    body.light-theme .subtle,
+    body.light-theme .prompt-desc,
+    body.light-theme .mini-card p,
+    body.light-theme .info p,
+    body.light-theme .history-preview{
+      color:#60708a !important;
+    }
+    body.light-theme .pill{
+      background:#edf4ff;
+      border-color:#c7d9ef;
+      color:#34506f;
+    }
+    body.light-theme .btn{
+      color:#20324b;
+      background:#eef3f9;
+      border-color:#d5dfeb;
+    }
+    body.light-theme .btn:hover{
+      color:#152238;
+      background:#e2eaf4;
+      border-color:#9ab4da;
+    }
+    body.light-theme .btn.primary,
+    body.light-theme .btn.pink{
+      color:#fff;
+      border:none;
+    }
+    body.light-theme .btn.ghost{
+      background:transparent;
+      color:#31445f;
+    }
+    body.light-theme .btn.danger{
+      background:#fff1f3;
+      border-color:#f1bcc6;
+      color:#a72d49;
+    }
+
+    body.light-theme .searchbox input,
+    body.light-theme input[type="text"],
+    body.light-theme textarea,
+    body.light-theme select{
+      background:#ffffff;
+      color:#152238;
+      border-color:#cfd9e7;
+    }
+    body.light-theme input::placeholder,
+    body.light-theme textarea::placeholder{
+      color:#8a99ae;
+    }
+    body.light-theme .searchbox::before{
+      color:#6f85a3;
+    }
+
+    body.light-theme .cat{
+      background:#eef3f9;
+      border-color:#d4deea;
+      color:#556984;
+    }
+    body.light-theme .cat.active{
+      color:#fff;
+      border-color:transparent;
+    }
+
+    body.light-theme .prompt-item{
+      background:#ffffff;
+      border-color:#d9e2ee;
+      color:#152238 !important;
+    }
+    body.light-theme .prompt-item:hover{
+      border-color:#9ab4da;
+      background:#f8fbff;
+    }
+    body.light-theme .prompt-item.active{
+      border-color:#7a62ff;
+      box-shadow:inset 0 0 0 1px rgba(122,98,255,.20);
+    }
+    body.light-theme .prompt-item .prompt-name{
+      color:#152238 !important;
+    }
+    body.light-theme .prompt-item .tag{
+      background:#eef4fb;
+      color:#47698e !important;
+    }
+
+    body.light-theme .empty,
+    body.light-theme .output,
+    body.light-theme .info,
+    body.light-theme .option-card,
+    body.light-theme .history-item{
+      background:#ffffff;
+      color:#152238;
+      border-color:#d7e0eb;
+    }
+    body.light-theme .output{
+      color:#1a2940;
+    }
+    body.light-theme .quality-note{
+      background:linear-gradient(90deg,rgba(244,63,141,.08),rgba(139,92,246,.08));
+      border-color:rgba(139,92,246,.20);
+      color:#5b3765;
+    }
+    body.light-theme .option-card:hover{
+      border-color:#7b8ff7;
+    }
+    body.light-theme .option-card b{
+      color:#152238;
+    }
+    body.light-theme .option-card small{
+      color:#63748d;
+    }
+    body.light-theme .divider{
+      background:#d7e0eb;
+    }
+
+    body.light-theme .modal{
+      background:rgba(35,48,68,.46);
+    }
+    body.light-theme .modal-card{
+      border-color:#d4deea;
+      background:#ffffff;
+      color:#152238;
+    }
+    body.light-theme .close{
+      color:#6d7e96;
+    }
+    body.light-theme .history-title{
+      color:#152238;
+    }
+    body.light-theme .history-date{
+      color:#74869f;
+    }
+    body.light-theme .saved-badge{
+      background:#e9f4fb;
+      color:#286583;
+    }
+    body.light-theme .toast{
+      background:#ffffff;
+      border-color:#cdd9e7;
+      color:#152238;
+    }
+    body.light-theme .footer{
+      color:#6d7f99;
+    }
+    body.light-theme h1,
+    body.light-theme h2,
+    body.light-theme h3,
+    body.light-theme h4,
+    body.light-theme .section-title h2,
+    body.light-theme .section-title h3{
+      color:#152238 !important;
+    }
+
+    @media (max-width:680px){
+      .theme-switch{width:100%}
+      .theme-btn{flex:1}
+    }
+
+    /* Lesbarkeit im Dark Mode */
+    h1,h2,h3,h4,.prompt-name,.section-title h2,.section-title h3{
+      color:var(--text) !important;
+    }
+    .prompt-item{
+      color:var(--text) !important;
+    }
+    .prompt-item .prompt-desc{
+      color:#a7b6d1 !important;
+    }
+    .prompt-item .tag{
+      color:#b9d9ff !important;
+    }
+    .cat{
+      color:#c7d7ee;
+    }
+
+    @media (max-width:1050px){
+      .hero{grid-template-columns:1fr}
+      .workspace{grid-template-columns:1fr}
+      .sidebar{position:static}
+      .prompt-list{max-height:none}
+      .info-grid{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width:680px){
+      .app{padding:12px}
+      .topbar{align-items:flex-start;flex-direction:column}
+      .hero-side,.grid2,.placeholder-grid,.info-grid{grid-template-columns:1fr}
+      .hero-card{padding:22px}
+      h1{font-size:44px}
+    }
+    @media print{
+      body{background:white;color:black}
+      body::before,.topbar,.sidebar,.toolbar,.hero,.limits,.footer{display:none!important}
+      .workspace{display:block}
+      .panel{border:none;box-shadow:none;background:white;color:black}
+      .output{border:1px solid #ccc;background:white;color:black}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><div class="brandmark">✦</div><span>WORK//AI</span></div>
+      <div class="topactions">
+        <div class="theme-switch" aria-label="Darstellungsmodus">
+          <button class="theme-btn active" id="darkModeBtn" type="button">🌙 Dunkel</button>
+          <button class="theme-btn" id="lightModeBtn" type="button">☀️ Hell</button>
+        </div>
+        <button class="btn ghost" id="exportBtn">↓ Sammlung exportieren</button>
+        <label class="btn ghost" for="importFile">↑ Sammlung importieren</label>
+        <input id="importFile" type="file" accept=".json,application/json" hidden />
+        <button class="btn ghost" id="historyBtn">🕘 Gespeicherte Prompts <span id="historyCount"></span></button>
+        <button class="btn primary" id="newPromptBtn">+ Neuer Prompt</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-card">
+        <div class="eyebrow">AI Productivity Toolkit · Local-first</div>
+        <h1>Prompt Hub für den <span class="gradient">Arbeitsalltag</span></h1>
+        <p class="lead">Gute Prompts einmal sauber erstellen, mit Platzhaltern speichern und anschließend in Sekunden wiederverwenden – für Recherche, Kommunikation, Präsentationen, Dokumente, Excel & Daten sowie KI-Management und Change.</p>
+        <div class="pillrow">
+          <span class="pill">Offline als HTML-Datei</span>
+          <span class="pill">Keine Installation</span>
+          <span class="pill">Schnell & wiederverwendbar</span>
+          <span class="pill">Export & Import</span><span class="pill">22 Praxisvorlagen</span><span class="pill">KI Manager & Change</span>
+        </div>
+      </div>
+      <div class="hero-side">
+        <div class="mini-card"><div class="eyebrow">01 · Zeit</div><strong>Weniger neu schreiben</strong><p>Vorlagen beschleunigen wiederkehrende Aufgaben.</p></div>
+        <div class="mini-card"><div class="eyebrow">02 · Qualität</div><strong>Konsistenter</strong><p>Bewährte Prompts werden im Team wiederverwendbar.</p></div>
+        <div class="mini-card"><div class="eyebrow">03 · Wissen</div><strong>Gespeichert</strong><p>Vorlagen und erzeugte Prompts bleiben lokal verfügbar und können exportiert werden.</p></div>
+        <div class="mini-card"><div class="eyebrow">04 · Grenze</div><strong>Input bleibt kritisch</strong><p>Ein guter Prompt macht falsche Angaben nicht automatisch richtig.</p></div>
+      </div>
+    </section>
+
+    <main class="workspace">
+      <aside class="sidebar">
+        <div class="panel">
+          <div class="section-title">
+            <h3>Prompt-Bibliothek</h3>
+            <span id="promptCount" class="tag"></span>
+          </div>
+          <div class="searchbox"><input id="searchInput" type="text" placeholder="Prompt suchen..." /></div>
+          <div id="categoryBar" class="cats"></div>
+          <div id="promptList" class="prompt-list"></div>
+        </div>
+      </aside>
+
+      <section class="content">
+        <div class="panel">
+          <div class="section-title">
+            <div>
+              <div class="eyebrow">Prompt Builder</div>
+              <h2 id="activeTitle">Prompt-Vorlage</h2>
+            </div>
+            <span id="activeCategory" class="pill"></span>
+          </div>
+          <p id="activeDescription" class="subtle"></p>
+
+          <div class="field template-box">
+            <label>Prompt-Vorlage mit {Platzhaltern}</label>
+            <textarea id="templateInput" spellcheck="false"></textarea>
+          </div>
+          <div class="toolbar" style="margin-top:10px">
+            <button class="btn" id="detectBtn">Platzhalter erkennen</button>
+            <button class="btn" id="saveCurrentBtn">Vorlage aktualisieren</button>
+            <span id="detectStatus" class="status"></span>
+          </div>
+
+          <div class="divider"></div>
+          <div class="section-title"><h3>Automatisch erkannte Eingabefelder</h3></div>
+          <div id="placeholderFields" class="placeholder-grid"></div>
+
+          <div class="toolbar" style="margin-top:16px">
+            <button class="btn primary" id="generateBtn">✨ Prompt generieren</button>
+            <button class="btn" id="clearFieldsBtn">Felder leeren</button>
+          </div>
+        </div>
+
+
+        <div class="panel">
+          <div class="section-title">
+            <div>
+              <div class="eyebrow">Smart Copy</div>
+              <h2>Was beim Kopieren automatisch passieren soll</h2>
+            </div>
+          </div>
+          <div class="option-grid">
+            <label class="option-card">
+              <input type="checkbox" id="directExecution" checked>
+              <span>
+                <b>Direkt umsetzen</b>
+                <small>ChatGPT soll die Aufgabe sofort ausführen – nicht nur erklären, wie es geht. Bei PowerPoint, Word, Excel oder PDF soll direkt eine Datei erstellt werden, wenn technisch möglich.</small>
+              </span>
+            </label>
+            <label class="option-card">
+              <input type="checkbox" id="languageCorrection" checked>
+              <span>
+                <b>Sprache automatisch korrigieren</b>
+                <small>Rechtschreibung, Grammatik, Zeichensetzung und Satzbau in deinen Eingaben werden bei der Ausführung still korrigiert, ohne die fachliche Aussage zu verändern.</small>
+              </span>
+            </label>
+            <label class="option-card">
+              <input type="checkbox" id="autoSaveGenerated" checked>
+              <span>
+                <b>Erzeugte Prompts automatisch speichern</b>
+                <small>Jeder generierte Prompt landet lokal im Verlauf und bleibt auch nach dem Schließen des Browsers verfügbar.</small>
+              </span>
+            </label>
+          </div>
+          <p class="subtle" style="margin:14px 0 0">Hinweis: WORK//AI selbst verwendet keine Online-KI. Die Sprachkorrektur und direkte Dateierstellung werden als klare Anweisung an ChatGPT bzw. dein KI-Tool in den kopierten Prompt eingebaut.</p>
+        </div>
+
+        <div class="panel">
+          <div class="section-title">
+            <div>
+              <div class="eyebrow">Ausgabe</div>
+              <h2>Fertiger Prompt</h2>
+            </div>
+            <div class="toolbar">
+              <button class="btn" id="saveGeneratedBtn">💾 Prompt speichern</button>
+              <button class="btn primary" id="copyBtn">📋 Für ChatGPT kopieren</button>
+              <button class="btn" id="printBtn">🖨 Drucken / PDF</button>
+            </div>
+          </div>
+          <div id="output" class="output">Noch kein Prompt generiert.</div>
+          <div class="quality-note">
+            <b>Qualitätssicherung:</b><br>
+            WORK//AI ergänzt automatisch Regeln zu Faktenprüfung, Unsicherheiten und – wenn aktiviert – Sprachkorrektur sowie direkter Umsetzung.
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="section-title"><h2>So beschleunigt WORK//AI deinen Arbeitsalltag</h2></div>
+          <div class="info-grid">
+            <div class="info"><div>①</div><b>Vorlage wählen</b><p>Bewährte Prompts statt jedes Mal bei null anzufangen.</p></div>
+            <div class="info"><div>②</div><b>Infos ergänzen</b><p>Nur die variablen Felder ausfüllen – WORK//AI baut daraus den vollständigen Prompt.</p></div>
+            <div class="info"><div>③</div><b>Direkt ausführen</b><p>Beim Kopieren wird ChatGPT angewiesen, die Aufgabe direkt umzusetzen – inklusive Datei, wenn passend.</p></div>
+            <div class="info"><div>④</div><b>Wiederverwenden</b><p>Vorlagen und erzeugte Prompts lokal speichern, suchen, exportieren und erneut nutzen.</p></div>
+          </div>
+        </div>
+
+        <div class="panel limits">
+          <div class="section-title"><h2>⚠ Qualität, Datenschutz & Grenzen</h2></div>
+          <ul>
+            <li>Das Werkzeug prüft die <b>Struktur und Vollständigkeit</b> eines Prompts, nicht automatisch die Wahrheit der eingegebenen Informationen.</li>
+            <li>Falsche Angaben können genauso professionell verarbeitet werden wie richtige Angaben.</li>
+            <li>Die Pflichtzeile fordert die nachfolgende KI zur kritischen Prüfung auf, garantiert aber keine Erkennung falscher Fakten.</li>
+            <li>Vor geschäftlichen Entscheidungen, externer Kommunikation oder Weitergabe müssen Ergebnisse durch Menschen geprüft werden.</li>
+            <li>Vorlagen und gespeicherte Prompt-Verläufe können dauerhaft lokal im Browser gespeichert werden. Für Backup oder Team-Weitergabe steht zusätzlich Export/Import bereit.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+    <div class="footer">WORK//AI · AI Productivity Toolkit · lokal im Browser · erst beim Kopieren übergibst du Inhalte an dein KI-Tool</div>
+  </div>
+
+  <div class="modal" id="promptModal">
+    <div class="modal-card">
+      <div class="modal-head"><h3>Neuen Prompt anlegen</h3><button class="close" id="closeModal">×</button></div>
+      <div class="grid2">
+        <div class="field"><label>Name</label><input id="newName" type="text" placeholder="z. B. Meeting zusammenfassen"></div>
+        <div class="field"><label>Kategorie</label><input id="newCategory" type="text" placeholder="z. B. Organisation"></div>
+      </div>
+      <div class="field" style="margin-top:12px"><label>Kurzbeschreibung</label><input id="newDescription" type="text" placeholder="Wofür ist die Vorlage gedacht?"></div>
+      <div class="field" style="margin-top:12px"><label>Prompt-Vorlage</label><textarea id="newTemplate" placeholder="Nutze Platzhalter in geschweiften Klammern, z. B. {Thema}."></textarea></div>
+      <div class="toolbar" style="margin-top:14px">
+        <button class="btn primary" id="createPromptBtn">Prompt speichern</button>
+        <button class="btn ghost" id="cancelPromptBtn">Abbrechen</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal" id="historyModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow">Lokaler Verlauf</div>
+          <h3>Gespeicherte Prompts</h3>
+        </div>
+        <button class="close" id="closeHistory">×</button>
+      </div>
+      <p class="subtle">Diese Prompts sind lokal in diesem Browser gespeichert. Du kannst sie erneut kopieren, als Textdatei herunterladen oder löschen.</p>
+      <div class="toolbar" style="margin:14px 0">
+        <button class="btn" id="exportHistoryBtn">↓ Verlauf als JSON</button>
+        <button class="btn" id="exportHistoryTxtBtn">↓ Verlauf als TXT</button>
+        <button class="btn danger" id="clearHistoryBtn">Verlauf löschen</button>
+      </div>
+      <div id="historyList" class="history-list"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const QUALITY_LINE = "Prüfe die bereitgestellten Informationen kritisch. Weise auf fehlende, widersprüchliche oder nicht verifizierbare Angaben hin, statt Annahmen als Fakten darzustellen. Erfinde keine Informationen.";
+
+
+    const THEME_KEY = "work_ai_theme";
+
+    function applyTheme(mode){
+      const isLight = mode === "light";
+      document.body.classList.toggle("light-theme", isLight);
+
+      const darkBtn = el("darkModeBtn");
+      const lightBtn = el("lightModeBtn");
+      if(darkBtn && lightBtn){
+        darkBtn.classList.toggle("active", !isLight);
+        lightBtn.classList.toggle("active", isLight);
+        darkBtn.setAttribute("aria-pressed", String(!isLight));
+        lightBtn.setAttribute("aria-pressed", String(isLight));
+      }
+
+      try{ localStorage.setItem(THEME_KEY, isLight ? "light" : "dark"); }catch(e){}
+    }
+
+    function loadTheme(){
+      let mode = "dark";
+      try{
+        const stored = localStorage.getItem(THEME_KEY);
+        if(stored === "light" || stored === "dark") mode = stored;
+      }catch(e){}
+      applyTheme(mode);
+    }
+
+        const STORAGE_KEY = "work_ai_state_v4";
+    let savedGenerated = [];
+
+    function loadLocalState(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return;
+        const state = JSON.parse(raw);
+        if(Array.isArray(state.prompts) && state.prompts.length) prompts = state.prompts;
+        if(Array.isArray(state.savedGenerated)) savedGenerated = state.savedGenerated;
+        if(typeof state.directExecution === "boolean") el("directExecution").checked = state.directExecution;
+        if(typeof state.languageCorrection === "boolean") el("languageCorrection").checked = state.languageCorrection;
+        if(typeof state.autoSaveGenerated === "boolean") el("autoSaveGenerated").checked = state.autoSaveGenerated;
+      }catch(err){
+        console.warn("Lokaler WORK//AI-Stand konnte nicht geladen werden.", err);
+      }
+    }
+
+    function persistLocalState(){
+      try{
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          prompts,
+          savedGenerated,
+          directExecution: el("directExecution")?.checked ?? true,
+          languageCorrection: el("languageCorrection")?.checked ?? true,
+          autoSaveGenerated: el("autoSaveGenerated")?.checked ?? true
+        }));
+        updateHistoryCount();
+      }catch(err){
+        console.warn("Lokales Speichern fehlgeschlagen.", err);
+      }
+    }
+
+    function executionInstruction(promptId){
+      const artifactMap = {
+        presentation: "Erstelle die PowerPoint-Präsentation jetzt direkt als .pptx-Datei. Nutze die verfügbaren Werkzeuge zur Dateierstellung und liefere mir anschließend den Download-Link zur fertigen Präsentation. Gib nicht nur eine Foliengliederung aus. Falls die technische Dateierstellung in dieser Umgebung nicht verfügbar ist, liefere ersatzweise den vollständigen finalen Folieninhalt.",
+        word_doc: "Erstelle das fertige Word-Dokument jetzt direkt als .docx-Datei und liefere anschließend den Download-Link. Gib nicht nur eine Anleitung oder Gliederung aus.",
+        pdf_prep: "Erstelle das fertige Dokument jetzt direkt als PDF-Datei und liefere anschließend den Download-Link. Gib nicht nur Hinweise zur PDF-Erstellung aus.",
+        excel_structure: "Erstelle die Excel-Arbeitsmappe jetzt direkt als .xlsx-Datei mit den sinnvollen Tabellenblättern, Spalten, Formeln und Datenvalidierungen und liefere anschließend den Download-Link. Falls Beispieldaten fehlen, nutze nur klar als Beispiel gekennzeichnete Dummywerte.",
+        data_analysis: "Wenn die vorliegenden Daten ausreichen oder als Datei bereitgestellt wurden, erstelle die Analyse direkt und – sofern sinnvoll – eine fertige Excel-Datei mit Auswertung bzw. Diagrammen. Liefere das Ergebnis statt nur eine Vorgehensbeschreibung.",
+        meeting_minutes: "Erstelle das fertige Protokoll direkt. Wenn Dateierstellung verfügbar ist, erstelle zusätzlich eine .docx-Datei und liefere den Download-Link.",
+        meeting_summary: "Führe die Auswertung der Meeting-Inhalte jetzt direkt durch und liefere die fertige Management Summary, Entscheidungen und To-do-Tabelle.",
+        project_plan: "Erstelle den vollständigen Projektplan jetzt direkt. Wenn eine Tabellen- oder Dokumentdatei sinnvoll ist und Dateierstellung verfügbar ist, erstelle sie direkt und liefere den Download-Link.",
+        management_briefing: "Erstelle das fertige Management-Briefing jetzt direkt und nicht nur eine Anleitung dazu.",
+        ai_use_case: "Führe die KI-Use-Case-Bewertung jetzt vollständig durch und gib eine klare Management-Empfehlung aus.",
+        change_impact: "Führe die Change-Impact-Analyse jetzt vollständig durch und gib den fertigen Maßnahmenplan aus.",
+        process_automation: "Führe die Prozessanalyse jetzt vollständig durch und liefere eine priorisierte Automatisierungs-/KI-Roadmap.",
+        stakeholder: "Erstelle den fertigen Stakeholder- und Adoption-Plan jetzt vollständig."
+      };
+      return artifactMap[promptId] || "Führe die oben beschriebene Aufgabe jetzt direkt vollständig aus. Erkläre nicht nur, wie man sie erledigt, sondern liefere das fertige Ergebnis.";
+    }
+
+    function buildSmartPrompt(){
+      const base = buildBasePrompt();
+      if(!base) return "";
+      let extras = [];
+
+      if(el("languageCorrection")?.checked){
+        extras.push(
+`SPRACHQUALITÄT:
+Korrigiere Rechtschreibung, Grammatik, Zeichensetzung und Satzbau in allen von mir bereitgestellten Texten automatisch und stillschweigend, bevor du sie weiterverarbeitest. Verändere dabei keine fachliche Aussage, Zahlen, Namen, Termine oder beabsichtigte Bedeutung. Wenn eine Formulierung inhaltlich unklar ist, markiere sie als Rückfrage statt etwas zu erfinden.`
+        );
+      }
+
+      extras.push(
+`QUALITÄT & FAKTENTREUE:
+${QUALITY_LINE}
+Trenne Fakten, Annahmen und offene Punkte sichtbar, wenn dies für die Aufgabe relevant ist.`
+      );
+
+      if(el("directExecution")?.checked){
+        extras.push(
+`UMSETZUNG:
+${executionInstruction(activeId)}`
+        );
+      }
+
+      return base.trim() + "\n\n" + extras.join("\n\n");
+    }
+
+    function saveGeneratedPrompt(text, manual=false){
+      const clean = (text || "").trim();
+      if(!clean || clean === "Noch kein Prompt generiert.") return false;
+
+      const p = getActivePrompt();
+      savedGenerated.unshift({
+        id: "g_" + Date.now() + "_" + Math.random().toString(36).slice(2,7),
+        title: p?.name || "Prompt",
+        category: p?.category || "Allgemein",
+        createdAt: new Date().toISOString(),
+        text: clean
+      });
+      savedGenerated = savedGenerated.slice(0, 250);
+      persistLocalState();
+      if(manual) toast("Prompt lokal gespeichert.");
+      return true;
+    }
+
+    function updateHistoryCount(){
+      const node = el("historyCount");
+      if(node) node.textContent = savedGenerated.length ? `(${savedGenerated.length})` : "";
+    }
+
+    function renderHistory(){
+      const box = el("historyList");
+      if(!box) return;
+      box.innerHTML = "";
+      if(!savedGenerated.length){
+        box.innerHTML = '<div class="empty">Noch keine Prompts gespeichert.</div>';
+        return;
+      }
+
+      savedGenerated.forEach(item=>{
+        const card = document.createElement("div");
+        card.className = "history-item";
+        const dt = new Date(item.createdAt);
+        card.innerHTML = `
+          <div class="history-head">
+            <div>
+              <div class="history-title">${escapeHtml(item.title)}</div>
+              <span class="saved-badge">${escapeHtml(item.category || "Allgemein")}</span>
+            </div>
+            <div class="history-date">${dt.toLocaleString("de-DE")}</div>
+          </div>
+          <div class="history-preview">${escapeHtml(item.text.slice(0,700))}</div>
+          <div class="history-actions">
+            <button class="btn" data-copy-history="${item.id}">📋 Kopieren</button>
+            <button class="btn" data-download-history="${item.id}">↓ TXT</button>
+            <button class="btn danger" data-delete-history="${item.id}">Löschen</button>
+          </div>`;
+        box.appendChild(card);
+      });
+
+      box.querySelectorAll("[data-copy-history]").forEach(btn=>btn.onclick=async()=>{
+        const item=savedGenerated.find(x=>x.id===btn.dataset.copyHistory);
+        if(!item) return;
+        await copyText(item.text);
+        toast("Gespeicherter Prompt kopiert.");
+      });
+      box.querySelectorAll("[data-download-history]").forEach(btn=>btn.onclick=()=>{
+        const item=savedGenerated.find(x=>x.id===btn.dataset.downloadHistory);
+        if(!item) return;
+        downloadText(item.text, sanitizeFilename(item.title)+".txt");
+      });
+      box.querySelectorAll("[data-delete-history]").forEach(btn=>btn.onclick=()=>{
+        savedGenerated=savedGenerated.filter(x=>x.id!==btn.dataset.deleteHistory);
+        persistLocalState();
+        renderHistory();
+      });
+    }
+
+    function sanitizeFilename(s){
+      return String(s || "prompt").replace(/[^\wäöüÄÖÜß\- ]+/g,"").trim().replace(/\s+/g,"_").slice(0,80) || "prompt";
+    }
+
+    function downloadText(text, filename){
+      const blob=new Blob([text],{type:"text/plain;charset=utf-8"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    async function copyText(txt){
+      try{
+        await navigator.clipboard.writeText(txt);
+      }catch{
+        const ta=document.createElement("textarea");
+        ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();
+      }
+    }
+
+    function exportGeneratedHistory(asTxt=false){
+      if(!savedGenerated.length) return toast("Noch keine gespeicherten Prompts.");
+      if(asTxt){
+        const txt = savedGenerated.map((x,i)=>
+          `# ${i+1} · ${x.title}\nKategorie: ${x.category}\nGespeichert: ${new Date(x.createdAt).toLocaleString("de-DE")}\n\n${x.text}\n\n${"=".repeat(80)}\n`
+        ).join("\n");
+        downloadText(txt, "WORK_AI_gespeicherte_Prompts.txt");
+      }else{
+        const blob=new Blob([JSON.stringify({app:"WORK//AI",exportedAt:new Date().toISOString(),savedGenerated},null,2)],{type:"application/json"});
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement("a");a.href=url;a.download="WORK_AI_gespeicherte_Prompts.json";
+        document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+      }
+      toast("Gespeicherte Prompts exportiert.");
+    }
+
+    const defaultPrompts = [
+      {
+            "id": "research_sources",
+            "name": "Recherche mit Quellenpflicht",
+            "icon": "🔎",
+            "category": "Recherche",
+            "description": "Strukturierte Recherche mit Quellen, Widersprüchen und klarer Trennung von belegt, strittig und offen.",
+            "template": "Du recherchierst für {Zielgruppe}.\n\nLeitfrage: {Leitfrage}\nUmfang: {Umfang}\nZeitraum: berücksichtige vorrangig Quellen ab {Zeitraum ab}.\n\nVorgehen:\n- Gliedere nach Teilfragen, nicht nach Quellen.\n- Nenne zu jeder wichtigen Aussage Titel, Herausgeber und Datum der Quelle.\n- Trenne sichtbar: belegt, strittig, offen.\n- Wenn eine Angabe nur aus einer einzigen Quelle stammt, schreibe das dazu.\n- Widersprüche zwischen Quellen nicht glätten, sondern benennen.\n\nAusgabeform: {Ausgabeform}"
+      },
+      {
+            "id": "fact_check",
+            "name": "Faktencheck einer Behauptung",
+            "icon": "✅",
+            "category": "Recherche",
+            "description": "Behauptungen in Einzelteile zerlegen und systematisch auf Belegbarkeit prüfen.",
+            "template": "Prüfe die folgende Behauptung.\n\nBehauptung: {Behauptung}\nKontext, in dem sie steht: {Kontext}\n\nVorgehen:\n- Zerlege die Behauptung zuerst in einzelne Tatsachenbehauptungen.\n- Prüfe jede einzeln und ordne sie ein: belegt, teilweise belegt, unbelegt oder widerlegt.\n- Nenne für jede Einordnung die Quelle.\n- Sage ausdrücklich, welche Teile du nicht prüfen kannst und warum.\n- Kein Gesamturteil, bevor die Einzelteile stehen."
+      },
+      {
+            "id": "email",
+            "name": "Professionelle E-Mail verfassen",
+            "icon": "✉️",
+            "category": "Kommunikation",
+            "description": "Aus Anlass, Ziel und Kerninfos schnell eine klare professionelle E-Mail erstellen.",
+            "template": "Schreibe eine professionelle E-Mail auf Deutsch.\n\nEmpfängerin oder Empfänger: {Empfänger}\nVerhältnis zu mir: {Verhältnis}\nAnlass: {Anlass}\nDas soll die Mail erreichen: {Ziel}\nDiese Punkte müssen vorkommen: {Inhalte}\nTon: {Ton}\nLänge: höchstens {Wortzahl} Wörter\nFrist oder gewünschter Termin: {Frist}\n\nRegeln:\n- Betreffzeile getrennt ausgeben, höchstens sieben Wörter, ohne Werbeton.\n- Anliegen in den ersten zwei Sätzen, Begründung danach.\n- Am Ende genau eine konkrete Bitte.\n- Keine unnötigen Floskeln.\n- Erfinde keine Namen, Zahlen oder Termine, die ich nicht genannt habe."
+      },
+      {
+            "id": "difficult_message",
+            "name": "Schwierige Nachricht beantworten",
+            "icon": "💬",
+            "category": "Kommunikation",
+            "description": "Eine heikle Nachricht einordnen und zwei professionelle Antwortvarianten erstellen.",
+            "template": "Ich habe die folgende Nachricht bekommen und möchte professionell antworten.\n\nNachricht:\n{Eingegangene Nachricht}\n\nMein Verhältnis zur Person: {Verhältnis}\nDas will ich erreichen: {Ziel}\nDas will ich nicht: {Ausgeschlossen}\nTon: {Ton}\n\nVorgehen:\n- Sage mir zuerst in drei Stichpunkten, was die Nachricht tatsächlich verlangt und was sie nur andeutet.\n- Schreibe danach zwei Antwortfassungen mit unterschiedlicher Direktheit.\n- Benenne kurz, was jede Variante kommunikativ riskiert.\n- Keine unnötigen Rechtfertigungen oder Eskalationen."
+      },
+      {
+            "id": "presentation",
+            "name": "Präsentation erstellen",
+            "icon": "📊",
+            "category": "Präsentation",
+            "description": "Aus Informationen eine klare Storyline, Folienstruktur, Visualideen und Sprecherhinweise erzeugen.",
+            "template": "Du bist Experte für professionelle Business-Präsentationen.\n\nThema: {Thema}\nAnlass: {Anlass}\nZielgruppe: {Zielgruppe}\nZiel der Präsentation: {Ziel}\nDauer: {Dauer} Minuten\nKernbotschaft in einem Satz: {Kernbotschaft}\nAusgangsinformationen: {Inhalt}\n\nErstelle eine klare Storyline mit sinnvoller Reihenfolge.\n\nAusgabe je Folie:\n- Nummer und aussagekräftiger Folientitel\n- maximal 3–5 Kernaussagen\n- passende Visualisierung oder Grafikidee\n- kurzer Sprechtext\n\nRegeln:\n- Eine Botschaft pro Folie.\n- Zahlen nur verwenden, wenn sie im Ausgangsmaterial stehen; fehlende Zahlen als [offen] markieren.\n- Formuliere verständlich, prägnant und managementtauglich.\n- Letzte Folie: wichtigste Entscheidung, Empfehlung oder nächste Schritte."
+      },
+      {
+            "id": "word_doc",
+            "name": "Word-Dokument entwerfen",
+            "icon": "📝",
+            "category": "Dokumente",
+            "description": "Aus Material eine saubere Word-Struktur mit H1/H2/H3 und ausformulierten Abschnitten entwickeln.",
+            "template": "Entwirf ein professionelles Dokument, das anschließend in Word gesetzt werden kann.\n\nArt des Dokuments: {Dokumentart}\nZweck: {Zweck}\nZielgruppe: {Zielgruppe}\nUmfang: {Umfang}\nVorhandenes Material: {Material}\n\nAusgabe:\n- Gliederung mit Überschriftenebenen H1, H2 und H3\n- je Abschnitt zwei bis drei ausformulierte Sätze\n- sinnvolle Tabellen oder Abbildungen markieren\n- am Ende: welche Informationen für das Dokument noch fehlen\n\nRegeln:\n- Verwende ausschließlich Angaben aus dem Material.\n- Lücken als [offen] kennzeichnen.\n- Sachlicher, professioneller Ton."
+      },
+      {
+            "id": "pdf_prep",
+            "name": "Dokument für PDF-Ausgabe vorbereiten",
+            "icon": "📄",
+            "category": "Dokumente",
+            "description": "Text für eine professionelle PDF-Weitergabe strukturieren und auf fehlende Metadaten prüfen.",
+            "template": "Bereite den folgenden Text so auf, dass er professionell als PDF weitergegeben werden kann.\n\nText:\n{Text}\n\nAnlass der Weitergabe: {Anlass}\nEmpfängerkreis: {Empfänger}\n\nAufgaben:\n- Seitenaufbau vorschlagen: Titelblock, Gliederung, Kopf- und Fußzeile, Seitenzahlen\n- fehlende Deckblattangaben nennen: Datum, Version, Verfasser, Verteiler\n- prüfen, welche Angaben für diesen Empfängerkreis möglicherweise nicht bestimmt sind\n- Stellen benennen, die im Druck ohne Farbe unlesbar werden könnten\n- sinnvolle Tabellen, Infoboxen oder Management Summary vorschlagen\n\nÄndere fachliche Inhalte nicht ohne Hinweis."
+      },
+      {
+            "id": "meeting_minutes",
+            "name": "Protokoll aus Notizen",
+            "icon": "📋",
+            "category": "Dokumente",
+            "description": "Aus ungeordneten Notizen ein sauberes Protokoll mit Beschlüssen und Aufgabenliste erstellen.",
+            "template": "Mach aus meinen Notizen ein professionelles Protokoll.\n\nAnlass und Datum: {Anlass und Datum}\nTeilnehmende: {Teilnehmende}\nProtokollart: {Protokollart}\n\nNotizen:\n{Notizen}\n\nAusgabe:\n- Kopf mit Anlass, Datum und Teilnehmenden\n- Besprechungspunkte in sinnvoller Reihenfolge\n- getrennte Liste der Beschlüsse\n- Aufgabenliste mit Aufgabe, Person und Termin\n\nRegeln:\n- Nur aufnehmen, was in den Notizen steht.\n- Fehlende Zuständigkeiten oder Termine als [offen] markieren."
+      },
+      {
+            "id": "excel_structure",
+            "name": "Excel-Tabelle aufbauen",
+            "icon": "📈",
+            "category": "Daten & Excel",
+            "description": "Eine robuste Excel-Struktur für Eingabe und spätere Auswertung entwerfen.",
+            "template": "Entwirf den Aufbau einer professionellen Tabelle in Excel.\n\nZweck der Tabelle: {Zweck}\nWer trägt Daten ein: {Wer trägt ein}\nWer wertet aus: {Wer wertet aus}\nVorhandene Angaben: {Vorhandene Angaben}\nGewünschte Auswertung: {Auswertung}\n\nAusgabe:\n- Spaltenliste mit Spaltenname, Datentyp, Beispielwert und Pflichtfeld ja/nein\n- Vorschlag für Eingabeblatt und Auswertungsblatt\n- benötigte Formeln mit kurzer Erklärung\n- Hinweise zu Datenüberprüfung, Dropdowns und Fehlervermeidung\n- mögliche Pivot- oder Dashboard-Auswertung\n\nRegeln:\n- Rohdaten und Auswertung trennen.\n- Keine verbundenen Zellen in Datenbereichen.\n- Datumsangaben als Datum, nicht als Text."
+      },
+      {
+            "id": "excel_formula",
+            "name": "Excel-Formel bauen & erklären",
+            "icon": "🧮",
+            "category": "Daten & Excel",
+            "description": "Eine konkrete Excel-Formel fertig zum Einfügen erzeugen und verständlich erklären.",
+            "template": "Ich brauche eine Formel in Excel.\n\nDas soll die Formel tun: {Aufgabe}\nAufbau der Tabelle: {Tabellenaufbau}\nErgebnis soll stehen in: {Zielzelle}\nExcel-Version oder Sprache: {Version}\n\nAusgabe:\n- die Formel fertig zum Einfügen\n- Erklärung der Bestandteile\n- Verhalten bei leeren Zellen oder Text statt Zahl\n- eine einfachere Alternative, falls vorhanden\n\nRegeln:\n- Deutsche Funktionsnamen, sofern bei Version nichts anderes steht.\n- Keine Makros, außer ich fordere sie ausdrücklich an.\n- Sage, wenn die Aufgabe mit einer Formel allein nicht sauber lösbar ist."
+      },
+      {
+            "id": "data_analysis",
+            "name": "Datenanalyse vorbereiten",
+            "icon": "📉",
+            "category": "Daten & Excel",
+            "description": "Datenproblem strukturieren, sinnvolle Analysen bestimmen und nächste Schritte definieren.",
+            "template": "Du bist Experte für Datenanalyse.\n\nAusgangssituation: {Ausgangssituation}\nVorliegende Daten: {Daten}\nGeschäftsfrage: {Geschäftsfrage}\nGewünschtes Ergebnis: {Ergebnis}\nTool: {Tool}\n\nErstelle:\n- sinnvolle Prüfschritte zur Datenqualität\n- geeignete Kennzahlen\n- empfohlene Auswertungen\n- mögliche Visualisierungen\n- nächste Schritte\n- Hinweise auf typische Fehlinterpretationen\n\nBevorzuge eine einfache, robuste und nachvollziehbare Lösung."
+      },
+      {
+            "id": "proofread",
+            "name": "Rechtschreibung & Grammatik prüfen",
+            "icon": "✍️",
+            "category": "Text",
+            "description": "Text korrigieren, ohne Aussage und persönliche Stimme unnötig zu verändern.",
+            "template": "Prüfe den folgenden Text auf Rechtschreibung, Zeichensetzung und Grammatik.\n\nSprachvarietät: {Sprache}\nEingriffstiefe: {Eingriffstiefe}\n\nRegeln:\n- Inhalt, Aussage und Stimme nicht verändern.\n- Gib zuerst den korrigierten Text vollständig aus.\n- Danach: wichtigste Änderungen mit Begründung.\n- Zweifelsfälle als Frage kennzeichnen.\n- Fachbegriffe und Eigennamen nicht still verändern.\n\nText:\n{Text}"
+      },
+      {
+            "id": "shorten",
+            "name": "Text kürzen",
+            "icon": "✂️",
+            "category": "Text",
+            "description": "Lange Texte gezielt kürzen, ohne zentrale Fakten, Zahlen oder Aussagen zu verlieren.",
+            "template": "Kürze den folgenden Text auf höchstens {Zielumfang}.\n\nVerwendungszweck: {Zweck}\nDas muss erhalten bleiben: {Unverzichtbar}\n\nRegeln:\n- Kürze durch Streichen und Zusammenziehen, nicht durch neue Verallgemeinerungen.\n- Keine Zahl, kein Name und kein Termin darf verschwinden, wenn er unter Unverzichtbar steht.\n- Nenne danach kurz, was du weggelassen hast und warum.\n\nText:\n{Text}"
+      },
+      {
+            "id": "summary_trace",
+            "name": "Zusammenfassung mit Prüfspur",
+            "icon": "🧾",
+            "category": "Text",
+            "description": "Managementtaugliche Zusammenfassung mit offenen Punkten und klarer Trennung von Fakten und Wertungen.",
+            "template": "Fasse den folgenden Text zusammen.\n\nFür wen: {Zielgruppe}\nWofür wird die Zusammenfassung gebraucht: {Zweck}\nLänge: {Länge}\n\nAufbau:\n1. Ergebnis in einem Satz\n2. drei bis fünf Punkte, die diesen Satz tragen\n3. was im Text offen bleibt oder nur behauptet wird\n4. welche Stellen des Originals für eine Prüfung besonders wichtig sind\n\nRegeln:\n- Keine Aussage ergänzen, die nicht im Text steht.\n- Wertungen als Wertungen kennzeichnen.\n\nText:\n{Text}"
+      },
+      {
+            "id": "translation",
+            "name": "Übersetzung mit Fachwortliste",
+            "icon": "🌐",
+            "category": "Text",
+            "description": "Konsistente Übersetzung mit definierter Terminologie und Kennzeichnung von Zweifelsfällen.",
+            "template": "Übersetze den folgenden Text von {Ausgangssprache} nach {Zielsprache}.\n\nVerwendungszweck: {Zweck}\nFestgelegte Fachbegriffe: {Fachwortliste}\nRegister / Ton: {Register}\n\nRegeln:\n- Begriffe aus der Fachwortliste konsistent übersetzen.\n- Eigennamen und Produktnamen unverändert lassen.\n- Nenne am Ende Stellen, an denen mehrere Übersetzungen vertretbar sind.\n\nText:\n{Text}"
+      },
+      {
+            "id": "project_plan",
+            "name": "Projektplan erstellen",
+            "icon": "🗂️",
+            "category": "Organisation",
+            "description": "Aus Ziel, Deadline und Ressourcen einen umsetzbaren Projektplan mit Meilensteinen und Risiken erstellen.",
+            "template": "Erstelle einen pragmatischen Projektplan.\n\nProjektziel: {Projektziel}\nDeadline: {Deadline}\nTeam / Ressourcen: {Ressourcen}\nRahmenbedingungen: {Rahmenbedingungen}\n\nErstelle:\n- Projektphasen und Arbeitspakete\n- wichtigste Meilensteine\n- Abhängigkeiten\n- Risiken und Gegenmaßnahmen\n- nächste fünf konkrete Schritte\n- sinnvolle Verantwortlichkeiten\n\nPriorisiere nach Wirkung und Umsetzbarkeit."
+      },
+      {
+            "id": "meeting_summary",
+            "name": "Meeting → Entscheidungen & To-dos",
+            "icon": "⚡",
+            "category": "Organisation",
+            "description": "Meeting-Inhalte sofort in Entscheidungen, Aufgaben, Verantwortliche und Fristen übersetzen.",
+            "template": "Strukturiere die folgenden Meeting-Inhalte für die direkte Weiterarbeit.\n\nMeeting / Thema: {Meeting}\nTeilnehmende: {Teilnehmende}\nNotizen oder Transkript: {Notizen}\n\nErstelle:\n1. Management Summary in maximal 5 Sätzen\n2. Entscheidungen\n3. To-dos als Tabelle: Aufgabe | Verantwortlich | Frist | Status\n4. offene Entscheidungen\n5. Risiken oder Blocker\n6. Vorschlag für die Agenda des nächsten Termins\n\nFehlende Verantwortliche oder Fristen als [offen] markieren."
+      },
+      {
+            "id": "ai_use_case",
+            "name": "KI-Use-Case bewerten",
+            "icon": "🤖",
+            "category": "KI Management",
+            "description": "Einen KI-Anwendungsfall aus Business-, Daten-, Technik-, Risiko- und Change-Sicht bewerten.",
+            "template": "Du bist KI-Manager und bewertest einen möglichen KI-Use-Case.\n\nUnternehmen / Bereich: {Unternehmen oder Bereich}\nProblem heute: {Problem}\nGeplante KI-Lösung: {KI-Lösung}\nVerfügbare Daten: {Daten}\nZiel / erwarteter Nutzen: {Ziel}\n\nBewerte:\n- Business Value\n- Datenlage und Datenqualität\n- technische Machbarkeit\n- notwendige Systemintegration\n- Human-in-the-Loop\n- Datenschutz und Sicherheitsrisiken\n- mögliche regulatorische Relevanz\n- Change-Auswirkungen auf Mitarbeitende\n- sinnvolle KPIs\n- Aufwand und Umsetzungsrisiko\n\nGib am Ende eine Empfehlung:\n1. sofort pilotieren\n2. erst Voraussetzungen schaffen\n3. aktuell nicht sinnvoll\n\nBegründe die Empfehlung managementtauglich."
+      },
+      {
+            "id": "change_impact",
+            "name": "Change-Impact-Analyse",
+            "icon": "🔄",
+            "category": "KI Management",
+            "description": "Auswirkungen einer KI-Einführung auf Rollen, Prozesse, Skills und Akzeptanz sichtbar machen.",
+            "template": "Du bist Change Manager für eine KI-Einführung.\n\nVeränderung / KI-Lösung: {Veränderung}\nBetroffener Bereich: {Bereich}\nBetroffene Rollen: {Rollen}\nHeutiger Prozess: {Heutiger Prozess}\nZielbild: {Zielbild}\n\nErstelle eine Change-Impact-Analyse mit:\n- Was ändert sich konkret?\n- Welche Rollen gewinnen oder verlieren Aufgaben?\n- Welche neuen Fähigkeiten werden benötigt?\n- mögliche Widerstände und Ursachen\n- Kommunikationsbedarf\n- Trainingsbedarf\n- notwendige Beteiligung von Führungskräften\n- Quick Wins\n- Risiken für Akzeptanz und Adoption\n\nSchließe mit den fünf wichtigsten Change-Maßnahmen für die nächsten 30 Tage."
+      },
+      {
+            "id": "management_briefing",
+            "name": "Management-Briefing",
+            "icon": "🎯",
+            "category": "KI Management",
+            "description": "Komplexe KI-Themen in eine kurze Entscheidungsvorlage für Führungskräfte übersetzen.",
+            "template": "Erstelle ein kurzes Management-Briefing.\n\nThema: {Thema}\nEntscheidung, die benötigt wird: {Entscheidung}\nAusgangslage: {Ausgangslage}\nVorliegende Fakten: {Fakten}\nOffene Punkte: {Offene Punkte}\n\nStruktur:\n1. Executive Summary\n2. Warum das Thema jetzt relevant ist\n3. Optionen\n4. Nutzen und Risiken je Option\n5. Kosten-/Aufwandsfaktoren, sofern bekannt\n6. Empfehlung\n7. nächste drei Schritte\n\nMaximal {Umfang}.\nTrenne Fakten, Annahmen und offene Fragen sichtbar."
+      },
+      {
+            "id": "process_automation",
+            "name": "Prozess auf KI-Potenzial prüfen",
+            "icon": "⚙️",
+            "category": "KI Management",
+            "description": "Einen heutigen Arbeitsprozess analysieren und sinnvolle Automatisierungs- bzw. KI-Hebel identifizieren.",
+            "template": "Analysiere folgenden Arbeitsprozess auf sinnvolle KI- und Automatisierungspotenziale.\n\nProzess: {Prozess}\nHeutiger Ablauf: {Ablauf}\nHäufigkeit / Volumen: {Volumen}\nSchmerzpunkte: {Schmerzpunkte}\nVerfügbare Systeme / Tools: {Systeme}\nBesondere Vorgaben: {Vorgaben}\n\nErstelle:\n- Prozessschritte heute\n- Zeitfresser und Fehlerquellen\n- mögliche Automatisierung ohne KI\n- mögliche KI-Unterstützung\n- Aufgaben, die bewusst beim Menschen bleiben sollten\n- benötigte Daten und Schnittstellen\n- Risiken\n- grobe Priorisierung nach Nutzen und Aufwand\n- Vorschlag für einen kleinen Pilot."
+      },
+      {
+            "id": "stakeholder",
+            "name": "Stakeholder- & Adoption-Plan",
+            "icon": "👥",
+            "category": "KI Management",
+            "description": "Stakeholder einer KI-Einführung priorisieren und passende Kommunikations- und Beteiligungsmaßnahmen planen.",
+            "template": "Erstelle einen Stakeholder- und Adoption-Plan für folgende Veränderung.\n\nKI-Projekt / Veränderung: {Projekt}\nOrganisation / Bereich: {Bereich}\nBekannte Stakeholder: {Stakeholder}\nZiel des Changes: {Ziel}\n\nErstelle:\n- Stakeholder-Gruppen\n- Einfluss und Betroffenheit\n- mögliche Interessen / Sorgen\n- gewünschtes Verhalten im Zielzustand\n- passende Kommunikationsbotschaft\n- geeigneter Kommunikationskanal\n- Beteiligungsformat\n- Zeitpunkt / Frequenz\n- Verantwortlichkeit\n\nMarkiere besonders kritische Stakeholder und schlage konkrete Maßnahmen zur Akzeptanzsteigerung vor."
+      }
+];
+
+    let prompts = JSON.parse(JSON.stringify(defaultPrompts));
+    let activeId = prompts[0].id;
+    let activeCategoryFilter = "Alle";
+    let currentValues = {};
+
+    const el = id => document.getElementById(id);
+    const toast = (msg) => {
+      el("toast").textContent = msg;
+      el("toast").classList.add("show");
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(()=>el("toast").classList.remove("show"),2200);
+    };
+
+    function uniquePlaceholders(template){
+      const re = /\{([^{}]+)\}/g;
+      const set = new Set();
+      let m;
+      while((m = re.exec(template)) !== null){
+        const name = m[1].trim();
+        if(name) set.add(name);
+      }
+      return [...set];
+    }
+
+    function getActivePrompt(){
+      return prompts.find(p=>p.id===activeId) || prompts[0];
+    }
+
+    function renderCategories(){
+      const cats = ["Alle", ...new Set(prompts.map(p=>p.category).filter(Boolean))];
+      el("categoryBar").innerHTML = "";
+      cats.forEach(cat=>{
+        const b=document.createElement("button");
+        b.className="cat"+(activeCategoryFilter===cat?" active":"");
+        b.textContent=cat;
+        b.onclick=()=>{activeCategoryFilter=cat; renderCategories(); renderPromptList();};
+        el("categoryBar").appendChild(b);
+      });
+    }
+
+    function renderPromptList(){
+      const q = el("searchInput").value.trim().toLowerCase();
+      const filtered = prompts.filter(p=>{
+        const matchCat = activeCategoryFilter==="Alle" || p.category===activeCategoryFilter;
+        const hay = `${p.name} ${p.description} ${p.category}`.toLowerCase();
+        return matchCat && (!q || hay.includes(q));
+      });
+
+      el("promptList").innerHTML="";
+      filtered.forEach(p=>{
+        const row=document.createElement("button");
+        row.type="button";
+        row.className="prompt-item"+(p.id===activeId?" active":"");
+        row.innerHTML=`
+          <div class="prompt-icon">${p.icon || "✦"}</div>
+          <div class="prompt-meta">
+            <div class="prompt-name">${escapeHtml(p.name)}</div>
+            <div class="prompt-desc">${escapeHtml(p.description || "")}</div>
+            <span class="tag">${escapeHtml(p.category || "Allgemein")}</span>
+          </div>`;
+        row.onclick=()=>selectPrompt(p.id);
+        el("promptList").appendChild(row);
+      });
+      if(!filtered.length){
+        el("promptList").innerHTML=`<div class="empty">Keine passenden Prompts gefunden.</div>`;
+      }
+      el("promptCount").textContent=`${prompts.length} Vorlagen`;
+    }
+
+    function selectPrompt(id){
+      activeId=id;
+      currentValues={};
+      const p=getActivePrompt();
+      el("activeTitle").textContent=p.name;
+      el("activeDescription").textContent=p.description || "";
+      el("activeCategory").textContent=p.category || "Allgemein";
+      el("templateInput").value=p.template;
+      el("output").textContent="Noch kein Prompt generiert.";
+      renderPromptList();
+      renderPlaceholderFields();
+    }
+
+    function renderPlaceholderFields(){
+      const template=el("templateInput").value;
+      const placeholders=uniquePlaceholders(template);
+      el("placeholderFields").innerHTML="";
+      if(!placeholders.length){
+        el("placeholderFields").innerHTML=`<div class="empty" style="grid-column:1/-1">Keine Platzhalter gefunden. Nutze z. B. <b>{Thema}</b> oder <b>{Zielgruppe}</b>.</div>`;
+        el("detectStatus").textContent="0 Platzhalter";
+        return;
+      }
+      placeholders.forEach(name=>{
+        const wrap=document.createElement("div");
+        wrap.className="field";
+        const label=document.createElement("label");
+        label.textContent=name;
+        const multiline = /inhalt|daten|notizen|beschreibung|rahmen|info|profil|text|ausgang/i.test(name);
+        const input=document.createElement(multiline?"textarea":"input");
+        if(!multiline) input.type="text";
+        input.placeholder=`${name} eingeben...`;
+        input.value=currentValues[name] || "";
+        input.dataset.placeholder=name;
+        input.addEventListener("input",e=>currentValues[name]=e.target.value);
+        wrap.append(label,input);
+        el("placeholderFields").appendChild(wrap);
+      });
+      el("detectStatus").textContent=`${placeholders.length} Platzhalter erkannt`;
+    }
+
+    function buildBasePrompt(){
+      const template=el("templateInput").value;
+      const placeholders=uniquePlaceholders(template);
+      let result=template;
+      const missing=[];
+      placeholders.forEach(name=>{
+        const node=[...document.querySelectorAll("[data-placeholder]")].find(x=>x.dataset.placeholder===name);
+        const val=(node?.value ?? currentValues[name] ?? "").trim();
+        if(!val) missing.push(name);
+        const safeVal=val || `[${name} fehlt]`;
+        result=result.replaceAll(`{${name}}`,safeVal);
+      });
+      window.__lastMissing = missing;
+      return result.trim();
+    }
+
+    function generatePrompt(){
+      const result = buildSmartPrompt();
+      if(!result) return;
+      el("output").textContent=result;
+
+      if(el("autoSaveGenerated")?.checked){
+        saveGeneratedPrompt(result, false);
+      }
+
+      const missing = window.__lastMissing || [];
+      if(missing.length){
+        toast(`Hinweis: ${missing.length} Feld(er) leer – im Prompt markiert.`);
+      }else{
+        toast("Prompt erstellt und für direkte Ausführung vorbereitet.");
+      }
+    }
+
+    function saveCurrent(){
+      const p=getActivePrompt();
+      p.template=el("templateInput").value;
+      renderPlaceholderFields();
+      persistLocalState();
+      toast("Vorlage dauerhaft lokal aktualisiert.");
+    }
+
+    function clearFields(){
+      currentValues={};
+      renderPlaceholderFields();
+      el("output").textContent="Noch kein Prompt generiert.";
+    }
+
+    function exportCollection(){
+      const payload={
+        app:"WORK//AI Prompt Hub",
+        exportedAt:new Date().toISOString(),
+        note:"Diese Datei enthält die Prompt-Sammlung. Sie kann im WORK//AI Prompt Hub wieder importiert werden.",
+        prompts
+      };
+      const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url;
+      a.download="work_ai_prompt_sammlung.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast("Prompt-Sammlung exportiert.");
+    }
+
+    function importCollection(file){
+      const reader=new FileReader();
+      reader.onload=()=>{
+        try{
+          const data=JSON.parse(reader.result);
+          const imported=Array.isArray(data)?data:data.prompts;
+          if(!Array.isArray(imported) || !imported.length) throw new Error("Keine Prompts gefunden.");
+          const valid=imported.filter(p=>p && p.name && typeof p.template==="string").map((p,i)=>({
+            id:String(p.id || `import_${Date.now()}_${i}`),
+            name:String(p.name),
+            icon:String(p.icon || "✦"),
+            category:String(p.category || "Import"),
+            description:String(p.description || ""),
+            template:String(p.template)
+          }));
+          if(!valid.length) throw new Error("Keine gültigen Prompts.");
+          prompts=valid;
+          activeId=prompts[0].id;
+          activeCategoryFilter="Alle";
+          renderCategories();
+          selectPrompt(activeId);
+          persistLocalState();
+          toast(`${valid.length} Prompts importiert und lokal gespeichert.`);
+        }catch(err){
+          alert("Import fehlgeschlagen: "+err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function createPrompt(){
+      const name=el("newName").value.trim();
+      const category=el("newCategory").value.trim() || "Allgemein";
+      const description=el("newDescription").value.trim();
+      const template=el("newTemplate").value.trim();
+      if(!name || !template){
+        alert("Bitte mindestens Name und Prompt-Vorlage ausfüllen.");
+        return;
+      }
+      const p={
+        id:`custom_${Date.now()}`,
+        name,category,description,template,
+        icon:"✦"
+      };
+      prompts.push(p);
+      persistLocalState();
+      closeModal();
+      renderCategories();
+      selectPrompt(p.id);
+      toast("Neuer Prompt angelegt.");
+    }
+
+    function escapeHtml(str){
+      return String(str).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
+    }
+
+    function openModal(){
+      el("promptModal").classList.add("open");
+      el("newName").focus();
+    }
+    function closeModal(){
+      el("promptModal").classList.remove("open");
+      ["newName","newCategory","newDescription","newTemplate"].forEach(id=>el(id).value="");
+    }
+
+    el("searchInput").addEventListener("input",renderPromptList);
+    el("detectBtn").onclick=()=>{renderPlaceholderFields();toast("Platzhalter neu erkannt.");};
+    el("saveCurrentBtn").onclick=saveCurrent;
+    el("generateBtn").onclick=generatePrompt;
+    el("clearFieldsBtn").onclick=clearFields;
+    el("exportBtn").onclick=exportCollection;
+    el("importFile").addEventListener("change",e=>{
+      if(e.target.files?.[0]) importCollection(e.target.files[0]);
+      e.target.value="";
+    });
+    el("copyBtn").onclick=async()=>{
+      let txt=el("output").textContent;
+      if(!txt || txt==="Noch kein Prompt generiert."){
+        generatePrompt();
+        txt=el("output").textContent;
+      } else {
+        // Refresh the smart-copy instructions in case switches changed after generation.
+        txt = buildSmartPrompt();
+        el("output").textContent = txt;
+      }
+      if(!txt) return toast("Bitte zuerst einen Prompt ausfüllen.");
+      await copyText(txt);
+      if(!el("autoSaveGenerated")?.checked){
+        // Manual copy still gives the user a chance to save separately; don't force history.
+      }
+      toast("Für ChatGPT kopiert – inklusive direkter Umsetzung & Qualitätshinweisen.");
+    };
+    el("printBtn").onclick=()=>window.print();
+    el("newPromptBtn").onclick=openModal;
+    el("closeModal").onclick=closeModal;
+    el("cancelPromptBtn").onclick=closeModal;
+    el("createPromptBtn").onclick=createPrompt;
+    el("promptModal").addEventListener("click",e=>{if(e.target===el("promptModal")) closeModal();});
+    document.addEventListener("keydown",e=>{if(e.key==="Escape") closeModal();});
+
+    el("saveGeneratedBtn").onclick=()=>{
+      let txt=el("output").textContent;
+      if(!txt || txt==="Noch kein Prompt generiert."){
+        generatePrompt();
+        txt=el("output").textContent;
+      }
+      saveGeneratedPrompt(txt, true);
+    };
+
+    el("historyBtn").onclick=()=>{
+      renderHistory();
+      el("historyModal").classList.add("open");
+    };
+    el("closeHistory").onclick=()=>el("historyModal").classList.remove("open");
+    el("historyModal").addEventListener("click",e=>{if(e.target===el("historyModal")) el("historyModal").classList.remove("open");});
+    el("exportHistoryBtn").onclick=()=>exportGeneratedHistory(false);
+    el("exportHistoryTxtBtn").onclick=()=>exportGeneratedHistory(true);
+    el("clearHistoryBtn").onclick=()=>{
+      if(!savedGenerated.length) return;
+      if(confirm("Alle lokal gespeicherten Prompts wirklich löschen?")){
+        savedGenerated=[];
+        persistLocalState();
+        renderHistory();
+        toast("Prompt-Verlauf gelöscht.");
+      }
+    };
+
+    ["directExecution","languageCorrection","autoSaveGenerated"].forEach(id=>{
+      el(id).addEventListener("change",()=>{
+        persistLocalState();
+        if(el("output").textContent!=="Noch kein Prompt generiert."){
+          el("output").textContent=buildSmartPrompt();
+        }
+      });
+    });
+
+    el("darkModeBtn").onclick=()=>applyTheme("dark");
+    el("lightModeBtn").onclick=()=>applyTheme("light");
+
+    // Darstellung und gespeicherten Browser-Stand laden.
+    loadTheme();
+
+    // Load saved browser state after DOM is ready, before rendering.
+    loadLocalState();
+    updateHistoryCount();
+
+    renderCategories();
+    selectPrompt(activeId);
+  </script>
+</body>
+</html>
